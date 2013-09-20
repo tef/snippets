@@ -21,8 +21,9 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp import util
 
-from emails import *
-from model import *
+from model import User, Snippet
+from emails import ReminderEmail, DigestEmail, OneReminderEmail, OneDigestEmail
+import config
 
 import functools
 import urllib
@@ -69,76 +70,18 @@ class UserHandler(BaseHandler):
         desired_user = user_from_email(email)
         snippets = desired_user.snippet_set
         snippets = sorted(snippets, key=lambda s: s.date, reverse=True)
-        following = email in user.following 
-        tags = [(t, t in user.tags_following) for t in desired_user.tags]
          
         template_values = {
                            'current_user' : user,
                            'user': desired_user,
                            'snippets': snippets,
-                           'following': following,
-                           'tags': tags
+                           'config': config
+
                            }
         self.render('user', template_values)
 
 
-class FollowHandler(BaseHandler):
-    """Follow a user or tag."""
-    @authenticated
-    def get(self):
-        user = self.get_user()
-        desired_tag = self.request.get('tag')
-        desired_user = self.request.get('user')
-        continue_url = self.request.get('continue')
         
-        if desired_tag and (desired_tag not in user.tags_following):
-            user.tags_following.append(desired_tag)
-            user.put()
-        if desired_user and (desired_user not in user.following):
-            user.following.append(desired_user)
-            user.put()
-            
-        self.redirect(continue_url)
-
-
-class UnfollowHandler(BaseHandler):
-    """Unfollow a user or tag."""
-    @authenticated
-    def get(self):
-        user = self.get_user()
-        desired_tag = self.request.get('tag')
-        desired_user = self.request.get('user')
-        continue_url = self.request.get('continue')
-        
-        if desired_tag and (desired_tag in user.tags_following):
-            user.tags_following.remove(desired_tag)
-            user.put()
-        if desired_user and (desired_user in user.following):
-            user.following.remove(desired_user)
-            user.put()
-            
-        self.redirect(continue_url)
-        
-
-class TagHandler(BaseHandler):
-    """View this week's snippets in a given tag."""
-    @authenticated
-    def get(self, tag):
-        user = self.get_user()
-        d = date_for_retrieval()
-        all_snippets = Snippet.all().filter("date =", d).fetch(500)
-        if (tag != 'all'):
-            all_snippets = [s for s in all_snippets if tag in s.user.tags]
-        following = tag in user.tags_following
-
-        template_values = {
-                           'current_user' : user,
-                           'snippets': all_snippets,
-                           'following': following,
-                           'tag': tag
-                           }
-        self.render('tag', template_values)
-
     
 class MainHandler(BaseHandler):
     """Show list of all users and acting user's settings."""
@@ -155,25 +98,16 @@ class MainHandler(BaseHandler):
             user.enabled = False
             user.put()
 
-        # Update tags if sent
-        tags = self.request.get('tags')
-        if tags:
-            user.tags = [s.strip() for s in tags.split(',')]
-            user.put()
             
         # Fetch user list and display
         raw_users = User.all().order('email').fetch(500)
-        following = compute_following(user, raw_users)
-        all_users = [(u, u.email in following) for u in raw_users]
-        all_tags = set()
-        for u in raw_users:
-            all_tags.update(u.tags)
-        all_tags = [(t, t in user.tags_following) for t in all_tags]
+        all_users = [(u, u.email) for u in raw_users]
+
         
         template_values = {
                            'current_user' : user,
                            'all_users': all_users,
-                           'all_tags': all_tags                           
+                           'config': config,
                            }
         self.render('index', template_values)
 
@@ -182,9 +116,6 @@ def main():
     application = webapp.WSGIApplication(
                                          [('/', MainHandler),
                                           ('/user/(.*)', UserHandler),
-                                          ('/tag/(.*)', TagHandler),
-                                          ('/follow', FollowHandler),
-                                          ('/unfollow', UnfollowHandler),
                                           ('/reminderemail', ReminderEmail),
                                           ('/digestemail', DigestEmail),
                                           ('/onereminder', OneReminderEmail),

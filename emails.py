@@ -5,14 +5,9 @@ from google.appengine.api import taskqueue
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 
-from dateutil import *
-from model import *
-
-REMINDER = """
-Hey nerd,
-
-The kids want to know what you're up to. Don't leave 'em hanging.
-"""
+import config
+from dateutil import date_for_new_snippet, date_for_retrieval
+from model import User, Snippet
 
 class ReminderEmail(webapp.RequestHandler):
     def get(self):
@@ -24,10 +19,10 @@ class ReminderEmail(webapp.RequestHandler):
 
 class OneReminderEmail(webapp.RequestHandler):
     def post(self):
-        mail.send_mail(sender="snippets <snippets@fssnippets.appspotmail.com>",
+        mail.send_mail(sender=config.email_address,
                        to=self.request.get('email'),
-                       subject="Snippet time!",
-                       body=REMINDER)
+                       subject=config.reminder_subject,
+                       body=config.reminder_body)
 
     def get(self):
         post(self)
@@ -41,14 +36,11 @@ class DigestEmail(webapp.RequestHandler):
 
 class OneDigestEmail(webapp.RequestHandler):
     def __send_mail(self, recipient, body):
-        mail.send_mail(sender="snippets <snippets@fssnippets.appspotmail.com>",
+        mail.send_mail(sender=config.email_address,
                        to=recipient,
-                       subject="Snippet delivery!",
+                       subject=config.digest_subject,
                        body=body)
 
-    def __snippet_to_text(self, snippet):
-        divider = '-' * 30
-        return '%s\n%s\n%s' % (snippet.user.pretty_name(), divider, snippet.text)
 
     def get(self):
         post(self)
@@ -56,12 +48,16 @@ class OneDigestEmail(webapp.RequestHandler):
     def post(self):
         user = user_from_email(self.request.get('email'))
         d = date_for_retrieval()
-        all_snippets = Snippet.all().filter("date =", d).fetch(500)
-        all_users = User.all().fetch(500)
-        following = compute_following(user, all_users)
+        all_snippets = Snippet.all().filter("digest_date =", d).filter("replaced =", False).fetch(500)
         logging.info(all_snippets)
-        body = '\n\n\n'.join([self.__snippet_to_text(s) for s in all_snippets if s.user.email in following])
+
+        def snippet_to_text(self, snippet):
+            divider = '-' * 30
+            return '%s\n%s\n%s' % (snippet.user.pretty_name(), divider, snippet.text)
+
+        body = '\n\n\n'.join(snippet_to_text(s) for s in all_snippets)
+
         if body:
-            self.__send_mail(user.email, 'https://fssnippets.appspot.com\n\n' + body)
+            self.__send_mail(user.email, body)
         else:
-            logging.info(user.email + ' not following anybody.')
+            logging.info(user.email + 'not following anybody.')

@@ -7,7 +7,9 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.mail_handlers import InboundMailHandler
 from google.appengine.ext.webapp import util
 
-from dateutil import date_for_new_snippet
+
+import config
+from dateutil import date_for_new_snippet, now
 from model import user_from_email, create_or_replace_snippet
 
 class ReceiveEmail(InboundMailHandler):
@@ -25,11 +27,15 @@ class ReceiveEmail(InboundMailHandler):
             split_email = re.split(sig_pattern, content)
             content = split_email[0]
 
-            reply_pattern = re.compile(r'^On.*at.*snippets', re.MULTILINE)
-            split_email = re.split(reply_pattern, content)
-            content = split_email[0]
+            output = []
+            for line in content.splitlines(True):
+                if not (line.startswith(">") or config.email_address in line):
+                    output.append(line)
 
-            create_or_replace_snippet(user, content, date_for_new_snippet())
+            content = "".join(output)
+
+            if content.strip():
+                create_or_replace_snippet(user, content, date_for_new_snippet(), now())
 
 
 def main():
