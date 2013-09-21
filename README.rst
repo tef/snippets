@@ -12,14 +12,14 @@ Changes
 - Stores time of snippet, doesn't delete old snippets. User list only shows most recent.
 - Changed config to live in config.py, somewhat less hardcoded in
 - Changed reply handling to handle both top and bottom posting.
+- Allow people to opt out of the reminder/digest only
 
 Todo
 ----
 
-- Allow people to opt out of the reminder/digest only
+- Make the HTML less abhorrent.
 - Put links in emails to summary digests per week, as well as user's list, and unsubscribing
 - Put back tags and selective following
-- Make the HTML less abhorrent.
 - Populate list of emails from g-apps api, rather than hand populating it.
 - Even less hard coding of cron dates, times, email address, configuration.
 - Use pytz, perhaps flask too instead of raw wsgi and homebrew timezone config

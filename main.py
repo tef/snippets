@@ -90,14 +90,21 @@ class MainHandler(BaseHandler):
     def get(self):
         user = self.get_user()
         # Update enabled state if requested
-        set_enabled = self.request.get('setenabled')
-        if set_enabled == '1':
-            user.enabled = True
+        send_digest = self.request.get('send_digest')
+        if send_digest == '1':
+            user.send_digest = True
             user.put()
-        elif set_enabled == '0':
-            user.enabled = False
+        elif send_digest == '0':
+            user.send_digest = False
             user.put()
 
+        send_reminder = self.request.get('send_reminder')
+        if send_reminder == '1':
+            user.send_reminder = True
+            user.put()
+        elif send_reminder == '0':
+            user.send_reminder = False
+            user.put()
             
         # Fetch user list and display
         raw_users = User.all().order('email').fetch(500)

@@ -4,10 +4,16 @@
 
     <h2><a href="/user/{{ current_user.email }}">{{ current_user.pretty_name }}</a></h2>
     <p>currently
-    {% if current_user.enabled %}
-      enabled (<a class="light" href="?setenabled=0">disable</a>)
+    {% if current_user.send_digest %}
+      recieving digests (<a class="light" href="?send_digest=0">disable</a>)
     {% else %}
-      disabled (<a class="light" href="?setenabled=1">enable</a>)
+      not recieving digests (<a class="light" href="?send_digest=1">enable</a>)
+    {% endif %}
+    ,
+    {% if current_user.send_reminder %}
+      recieving reminders (<a class="light" href="?send_reminder=0">disable</a>)
+    {% else %}
+      not recieving reminders (<a class="light" href="?send_reminder=1">enable</a>)
     {% endif %}
     </p>
 

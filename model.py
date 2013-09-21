@@ -5,7 +5,8 @@ from google.appengine.ext import db
 
 class User(db.Model):
     email = db.StringProperty()
-    enabled = db.BooleanProperty(default=True)
+    send_digest = db.BooleanProperty(default=True)
+    send_reminder = db.BooleanProperty(default=True)
     
     def pretty_name(self):
         return self.email.split('@')[0]
