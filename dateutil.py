@@ -1,24 +1,26 @@
 import datetime
+import calendar
 
 class London_tzinfo(datetime.tzinfo):
     """Implementation of the Europe/London timezone.
     
-    Adapted from http://code.google.com/appengine/docs/python/datastore/typesandpropertyclasses.html
     https://www.gov.uk/when-do-the-clocks-change
     """
     def utcoffset(self, dt):
         return datetime.timedelta(hours=0) + self.dst(dt)
 
     def _last_sunday(self, dt):
-        """FIX: First Sunday on or after dt."""
-        return dt + datetime.timedelta(days=(6-dt.weekday()))
+        """First Sunday on or before  dt."""
+        return dt -  datetime.timedelta(days=(1+dt.weekday())%7)
 
     def dst(self, dt):
         # 1am on the last Sunday in March
-        dst_start = self._last_sunday(datetime.datetime(dt.year, 3, 8, 2))
+        last_march_day = calendar.monthrange(dt.year, 3)[1]
+        dst_start = self._last_sunday(datetime.datetime(dt.year, 3, last_march_day, 1))
 
         # back 1 hour at 2am on the last Sunday in October.
-        dst_end = self._last_sunday(datetime.datetime(dt.year, 11, 1, 1))
+        last_oct_day = calendar.monthrange(dt.year, 3)[1]
+        dst_end = self._last_sunday(datetime.datetime(dt.year, 10, last_oct_day, 2))
 
         if dst_start <= dt.replace(tzinfo=None) < dst_end:
             return datetime.timedelta(hours=1)

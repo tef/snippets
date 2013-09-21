@@ -14,7 +14,7 @@ class Snippet(db.Model):
     user = db.ReferenceProperty(User)
     text = db.TextProperty()
     digest_date = db.DateProperty()
-    created_date = db.DateProperty()
+    created_date = db.DateTimeProperty()
     replaced = db.BooleanProperty(default=False)
 
 def user_from_email(email):

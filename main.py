@@ -21,7 +21,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template
 from google.appengine.ext.webapp import util
 
-from model import User, Snippet
+from model import User, Snippet, user_from_email
 from emails import ReminderEmail, DigestEmail, OneReminderEmail, OneDigestEmail
 import config
 
@@ -68,8 +68,8 @@ class UserHandler(BaseHandler):
         user = self.get_user()
         email = urllib.unquote_plus(email)
         desired_user = user_from_email(email)
-        snippets = desired_user.snippet_set
-        snippets = sorted(snippets, key=lambda s: s.date, reverse=True)
+        snippets = desired_user.snippet_set.filter("replaced =", False)
+        snippets = sorted(snippets, key=lambda s: s.digest_date, reverse=True)
          
         template_values = {
                            'current_user' : user,

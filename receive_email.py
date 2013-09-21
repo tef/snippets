@@ -9,7 +9,7 @@ from google.appengine.ext.webapp import util
 
 
 import config
-from dateutil import date_for_new_snippet, now
+from dateutil import date_for_new_snippet, London_tzinfo
 from model import user_from_email, create_or_replace_snippet
 
 class ReceiveEmail(InboundMailHandler):
@@ -29,13 +29,13 @@ class ReceiveEmail(InboundMailHandler):
 
             output = []
             for line in content.splitlines(True):
-                if not (line.startswith(">") or config.email_address in line):
+                if not (line.startswith(">") or config.email in line):
                     output.append(line)
 
             content = "".join(output)
 
             if content.strip():
-                create_or_replace_snippet(user, content, date_for_new_snippet(), now())
+                create_or_replace_snippet(user, content, date_for_new_snippet(), datetime.datetime.now(London_tzinfo()))
 
 
 def main():

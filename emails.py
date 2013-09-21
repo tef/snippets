@@ -7,7 +7,7 @@ from google.appengine.ext.webapp import util
 
 import config
 from dateutil import date_for_new_snippet, date_for_retrieval
-from model import User, Snippet
+from model import User, Snippet, user_from_email
 
 class ReminderEmail(webapp.RequestHandler):
     def get(self):
