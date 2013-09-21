@@ -21,7 +21,7 @@
     <h3>Users</h3>
     <ul>
     {% for user in all_users %}
-      <li><a href="/user/{{ user.0.email }}">{{ user.0.pretty_name }}</a></li>
+      <li><a href="/user/{{ user.0.email }}">{{ user.0.pretty_name }} &lt;{{user.0.email}}&gt;</a></li>
     {% endfor %}
     </ul>
 
