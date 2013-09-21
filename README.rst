@@ -9,8 +9,9 @@ Changes
 - Changed runtime to Python 2.7
 - Uses London timezone, not Eastern timezone
 - Eliminated Tags, and Following. If you're on the list of users, you get reminded and get all the updates.
-- Changed config to live in config.py, somewhat less hardcoded in
 - Stores time of snippet, doesn't delete old snippets. User list only shows most recent.
+- Changed config to live in config.py, somewhat less hardcoded in
+- Changed reply handling to handle both top and bottom posting.
 
 Todo
 ----
@@ -20,7 +21,7 @@ Todo
 - Put back tags and selective following
 - Make the HTML less abhorrent.
 - Populate list of emails from g-apps api, rather than hand populating it.
-- Even less hard coding of dates, times, email address, configuration.
-
+- Even less hard coding of cron dates, times, email address, configuration.
+- Use pytz, perhaps flask too instead of raw wsgi and homebrew timezone config
 
 
