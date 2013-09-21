@@ -17,6 +17,7 @@ Changes
 Todo
 ----
 
+- Don't Automatically add users who visit the site, allow people to add/remove people
 - Make the HTML less abhorrent.
 - Put links in emails to summary digests per week, as well as user's list, and unsubscribing
 - Put back tags and selective following
