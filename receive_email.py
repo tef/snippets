@@ -16,6 +16,8 @@ class ReceiveEmail(InboundMailHandler):
     """Receive a snippet email and create or replace snippet for this week."""
 
     def receive(self, message):
+        
+        # todo: check it came to the right place? addressed_to = message.to.split(",")
         user = user_from_email(email.utils.parseaddr(message.sender)[1])
         for content_type, body in message.bodies('text/plain'):
             # http://stackoverflow.com/questions/4021392/how-do-you-decode-a-binary-encoded-mail-message-in-python

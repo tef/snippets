@@ -5,7 +5,7 @@ api_version: 1
 threadsafe: no
 
 handlers:
-- url: /_ah/mail/codebot@.*codeclubsnippets\.appspotmail\.com 
+- url: /_ah/mail/.+
   script: receive_email.py
   login: admin
 
