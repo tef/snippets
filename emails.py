@@ -51,7 +51,7 @@ class OneDigestEmail(webapp.RequestHandler):
         all_snippets = Snippet.all().filter("digest_date =", d).filter("replaced =", False).fetch(500)
         logging.info(all_snippets)
 
-        def snippet_to_text(self, snippet):
+        def snippet_to_text(snippet):
             divider = '-' * 30
             return '%s\n%s\n%s' % (snippet.user.pretty_name(), divider, snippet.text)
 

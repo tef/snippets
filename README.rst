@@ -19,12 +19,12 @@ Todo
 
 - Don't Automatically add users who visit the site, allow people to add/remove people
 - Show current snippet, last week's snippet on front page, allow browing week by week.
+- Don't use GET to change state
 - Make the HTML less abhorrent.
 - Put links in emails to summary digests per week, as well as user's list, and unsubscribing
 - Put back tags and selective following
 - Populate list of emails from g-apps api, rather than hand populating it.
 - Even less hard coding of cron dates, times, email address, configuration.
 - Use pytz, perhaps flask too instead of raw wsgi and homebrew timezone config
-- Don't use GET to change state
 
 
