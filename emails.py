@@ -7,14 +7,17 @@ from google.appengine.ext.webapp import util
 
 import config
 from dateutil import date_for_new_snippet, date_for_retrieval
-from model import User, Snippet, user_from_email
+from model import User, Snippet, user_from_email, snippet_exists
 
 class ReminderEmail(webapp.RequestHandler):
     def get(self):
         all_users = User.all().filter("send_reminder =", True).fetch(500)
         for user in all_users:
-            # TODO: Check if one has already been submitted for this period.
-            taskqueue.add(url='/onereminder', params={'email': user.email})
+            if not snippet_exists(user, date_for_new_snippet()):
+                logging.info('reminding: '+ user.email)
+                taskqueue.add(url='/onereminder', params={'email': user.email})
+            else:
+                logging.info('skipping: '+user.email)
 
 
 class OneReminderEmail(webapp.RequestHandler):

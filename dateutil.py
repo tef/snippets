@@ -35,9 +35,9 @@ class London_tzinfo(datetime.tzinfo):
         
         
 def date_for_new_snippet():
-    """Return next Monday, unless it is Monday (0) or Tuesday (1)"""
+    """Return next Monday, unless it is Monday (0)"""
     today = now()
-    if (today.weekday() < 2):
+    if (today.weekday() < 1):
         aligned = today - datetime.timedelta(days=today.weekday())
     else:
         aligned = today + datetime.timedelta(days=(7 - today.weekday()))

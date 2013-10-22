@@ -3,6 +3,10 @@ cron:
   url: /reminderemail
   schedule: every friday 10:00
   timezone: Europe/London
+- description: weekly nag
+  url: /reminderemail
+  schedule: every friday 17:00
+  timezone: Europe/London
 - description: weekly digest
   url: /digestemail
   schedule: every monday 10:00

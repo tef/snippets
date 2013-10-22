@@ -20,6 +20,11 @@ class Snippet(db.Model):
 
 def user_from_email(email):
     return User.all().filter("email =", email).fetch(1)[0]
+
+def snippet_exists(user, digest_date):
+    for existing in Snippet.all().filter("digest_date =", digest_date).filter("user =", user).fetch(1):
+        return True
+
     
 def create_or_replace_snippet(user, text, digest_date, created_date):
     # Delete existing (yeah, yeah, should be a transaction)
